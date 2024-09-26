@@ -2,7 +2,7 @@ import React from 'react';
 import Cell from './Cell';
 import './Map.css';
 
-function Map({ map, pacmanPosition, pacmanDirection, animationFrame, ghosts }) {
+function Map({ map, pacmanPosition, pacmanDirection, animationFrame, ghosts, fruitPosition, ghostsBlueEyed }) {
     return (
         <div className="map">
             {map.map((row, rowIndex) => (
@@ -25,6 +25,11 @@ function Map({ map, pacmanPosition, pacmanDirection, animationFrame, ghosts }) {
                             ghostType = ghostHere.type; // Get the ghost's type (color)
                         }
 
+                        // Check if this cell contains a fruit
+                        if (fruitPosition && fruitPosition.x === cellIndex && fruitPosition.y === rowIndex) {
+                            type = 5; // Fruit's cell type
+                        }
+
                         return (
                             <Cell
                                 key={cellIndex}
@@ -32,6 +37,7 @@ function Map({ map, pacmanPosition, pacmanDirection, animationFrame, ghosts }) {
                                 ghostType={ghostType}
                                 pacmanDirection={pacmanDirection}
                                 animationFrame={animationFrame}
+                                ghostsBlueEyed={ghostsBlueEyed}
                             />
                         );
                     })}
