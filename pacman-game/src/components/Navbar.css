@@ -1,0 +1,36 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1a1a5e; /* Dark blue background */
+    color: #fff; /* Text color */
+    padding: 10px 20px;
+    border-bottom: 2px solid #fff;
+    font-family: 'Arial', sans-serif;
+}
+
+.navbar-title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.navbar-info {
+    display: flex;
+    align-items: center;
+}
+
+.level {
+    margin-right: 40px; /* Space between level and lives */
+    font-size: 18px;
+}
+
+.lives {
+    display: flex;
+    align-items: center;
+}
+
+.heart-icon {
+    width: 24px; /* Adjust the size of the heart */
+    height: 24px;
+    margin-left: 5px; /* Space between hearts */
+}

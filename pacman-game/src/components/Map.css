@@ -1,50 +1,64 @@
+/* Add styles to center the map within the parent container */
+.map-container {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  height: 100vh; /* Use full viewport height */
+}
+
+/* Map styling */
 .map {
-    display: grid;
-    grid-template-rows: repeat(9, 40px); /* Adjust the number of rows based on the map size */
-    grid-template-columns: repeat(12, 40px); /* Adjust the number of columns based on the map size */
-    gap: 2px; /* Adds space between cells */
-    position: relative;
-    width: max-content;
-    margin: auto;
-  }
-  
-  .cell {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .wall {
-    background-color: blue; /* Wall color */
-    border: 2px solid darkblue;
-  }
-  
-  .path {
-    background-color: black; /* Path color */
-  }
-  
-  .pacman {
-    background-color: yellow;
-    border-radius: 50%; /* Makes Pacman circular */
-  }
-  
-  .pellet {
-    background-color: black; /* Matches the path */
-    position: relative;
-  }
-  
-  .pellet::after {
-    content: '';
-    display: block;
-    width: 10px;
-    height: 10px;
-    background-color: white;
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-  
+  display: grid;
+  grid-template-rows: repeat(18, 30px); /* 18 rows, 30px each */
+  grid-template-columns: repeat(18, 30px); /* 18 columns, 30px each */
+  gap: 0; /* No gaps between cells */
+  background-color: black;
+  border: 2px solid white;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+/* Row styling */
+.row {
+  display: contents; /* Allow the cells to use the grid layout */
+}
+
+.cell {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.wall {
+  background-color: #0000FF;
+  border: 2px solid darkblue;
+}
+
+.path {
+  background-color: black;
+}
+
+.pacman-image,
+.ghost-image {
+  width: 25px;
+  height: 25px;
+}
+
+.pellet::after {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+}
+
+.ghost-box {
+  background-color: #333333;
+  border: 2px dashed #FFFFFF;
+}
