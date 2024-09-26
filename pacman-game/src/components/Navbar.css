@@ -20,7 +20,7 @@
 }
 
 .level {
-    margin-right: 40px; /* Space between level and lives */
+    margin-right: 20px; /* Space between level and lives */
     font-size: 18px;
 }
 
@@ -29,8 +29,9 @@
     align-items: center;
 }
 
+/* Style for the heart icons */
 .heart-icon {
-    width: 24px; /* Adjust the size of the heart */
-    height: 24px;
-    margin-left: 5px; /* Space between hearts */
+    width: 24px; /* Adjust the width of the heart */
+    height: 24px; /* Adjust the height of the heart */
+    margin-left: 5px; /* Space between heart icons */
 }

@@ -5,9 +5,10 @@ import mapLevel1 from './maps/mapLevel1';
 import './App.css';
 
 function App() {
-    // State for lives, level, and map
+    // State for lives, level, map, score, and Pacman's position
     const [lives, setLives] = useState(3);
     const [level, setLevel] = useState(1);
+    const [score, setScore] = useState(0); // New state for score
     const [map, setMap] = useState(mapLevel1);
     const [pacmanPosition, setPacmanPosition] = useState({ x: 8, y: 12 }); // Initial position of Pacman
 
@@ -55,6 +56,9 @@ function App() {
                     })
                 );
                 setMap(updatedMap);
+
+                // Increment the score when a pellet is eaten
+                setScore((prevScore) => prevScore + 10);
             }
         };
 
@@ -67,7 +71,7 @@ function App() {
 
     return (
         <div className="App">
-            <Navbar lives={lives} level={level} />
+            <Navbar lives={lives} level={level} score={score} />
             <div className="map-container">
                 <Map map={map} pacmanPosition={pacmanPosition} />
             </div>
