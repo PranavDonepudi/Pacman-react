@@ -1,0 +1,52 @@
+.map {
+    display: grid;
+    grid-template-rows: repeat(6, 40px);
+    grid-template-columns: repeat(10, 40px);
+  }
+  
+  .row {
+    display: flex;
+  }
+  
+  .cell {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #000;
+  }
+  
+  .wall {
+    background-color: black;
+  }
+  
+  .path {
+    background-color: white;
+  }
+  
+  .pacman {
+    background-color: yellow;
+    border-radius: 50%;
+  }
+  
+  .pellet {
+    background-color: white;
+    position: relative;
+  }
+  
+  .pellet::after {
+    content: '';
+    display: block;
+    width: 10px;
+    height: 10px;
+    background-color: blue;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .ghost {
+    background-color: red;
+    border-radius: 50%;
+  }
+  

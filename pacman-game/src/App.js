@@ -1,23 +1,15 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import Map from './components/Map';
+import mapLevel1 from './maps/mapLevel1';
 import './App.css';
 
 function App() {
+  const [map] = useState(mapLevel1);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Pacman Game</h1>
+      <Map map={map} />
     </div>
   );
 }
