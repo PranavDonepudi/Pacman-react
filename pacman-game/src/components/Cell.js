@@ -1,12 +1,20 @@
 import React from 'react';
-import pacmanImage from '../assets/pacman.png';
+import pacmanGif from '../assets/Pacman/pacman.gif';
+import pacmanUp1 from '../assets/Pacman/PacmanU1.png';
+import pacmanUp2 from '../assets/Pacman/PacmanU2.png';
+import pacmanDown1 from '../assets/Pacman/PacmanD1.png';
+import pacmanDown2 from '../assets/Pacman/PacmanD2.png';
+import pacmanLeft1 from '../assets/Pacman/PacmanL1.png';
+import pacmanLeft2 from '../assets/Pacman/PacmanL2.png';
+import pacmanRight1 from '../assets/Pacman/PacmanR1.png';
+import pacmanRight2 from '../assets/Pacman/PacmanR2.png';
 import ghostRedImage from '../assets/Ghost/ghost-red.png';
 import ghostBlueImage from '../assets/Ghost/ghost-blue.png';
 import ghostOrangeImage from '../assets/Ghost/ghost-orange.png';
 import ghostGreenImage from '../assets/Ghost/ghost-green.png'; // Assuming this is the yellow ghost
 import './Cell.css';
 
-function Cell({ type, ghostType }) {
+function Cell({ type, ghostType, pacmanDirection, animationFrame }) {
     let className = 'cell';
     let content = null;
 
@@ -16,6 +24,25 @@ function Cell({ type, ghostType }) {
         className += ' path';
     } else if (type === 2) {
         className += ' pacman';
+        // Choose Pacman image based on direction and animation frame
+        let pacmanImage;
+        switch (pacmanDirection) {
+            case 'up':
+                pacmanImage = animationFrame === 1 ? pacmanUp1 : pacmanUp2;
+                break;
+            case 'down':
+                pacmanImage = animationFrame === 1 ? pacmanDown1 : pacmanDown2;
+                break;
+            case 'left':
+                pacmanImage = animationFrame === 1 ? pacmanLeft1 : pacmanLeft2;
+                break;
+            case 'right':
+                pacmanImage = animationFrame === 1 ? pacmanRight1 : pacmanRight2;
+                break;
+            default:
+                pacmanImage = pacmanRight1; // Default to right-facing Pacman
+                break;
+        }
         content = <img src={pacmanImage} alt="Pacman" className="pacman-image" />;
     } else if (type === 3) {
         className += ' pellet';

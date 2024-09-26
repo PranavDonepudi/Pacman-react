@@ -1,14 +1,43 @@
 // gameFunctions.js
 
 // Initialize the ghost positions
-export const getInitialGhostPositions = () => {
+// ghosts.js
+export function getInitialGhostPositions() {
     return [
-        { x: 7, y: 3, type: 'red' },
-        { x: 8, y: 3, type: 'blue' },
-        { x: 7, y: 4, type: 'orange' },
-        { x: 8, y: 4, type: 'green' }
+        { 
+            x: 7, 
+            y: 3, 
+            type: 'red', 
+            released: false, 
+            delay: 0, 
+            initialPosition: { x: 7, y: 3 } 
+        },
+        { 
+            x: 8, 
+            y: 3, 
+            type: 'blue', 
+            released: false, 
+            delay: 5000,  // Delay of 5 seconds
+            initialPosition: { x: 8, y: 3 } 
+        },
+        { 
+            x: 7, 
+            y: 4, 
+            type: 'orange', 
+            released: false, 
+            delay: 10000,  // Delay of 10 seconds
+            initialPosition: { x: 7, y: 4 } 
+        },
+        { 
+            x: 8, 
+            y: 4, 
+            type: 'green', 
+            released: false, 
+            delay: 15000,  // Delay of 15 seconds
+            initialPosition: { x: 8, y: 4 } 
+        }
     ];
-};
+}
 
 // Handle keyboard events to change direction
 export const handleKeyDown = (event, setNextDirection, currentDirection) => {
@@ -143,32 +172,52 @@ export const movePacman = (
 export const moveGhosts = (ghosts, map, setGhosts) => {
     setGhosts(currentGhosts =>
         currentGhosts.map(ghost => {
+            // Skip moving the ghost if it's not released yet
+            if (!ghost.released) {
+                // Introduce a delay before releasing each ghost (e.g., every 5 seconds)
+                setTimeout(() => {
+                    setGhosts(prevGhosts =>
+                        prevGhosts.map(g => g.type === ghost.type ? { ...g, released: true } : g)
+                    );
+                }, ghost.delay);
+                return ghost; // Do not move the ghost if it's not released
+            }
+
+            // Calculate new position based on random movement, avoiding walls and initial positions
             const directions = ['up', 'down', 'left', 'right'];
             let newDirection = directions[Math.floor(Math.random() * directions.length)];
-            let { x, y } = ghost;
-
-            // Calculate new position based on direction
+            let { x, y, initialPosition } = ghost;
             let newX = x;
             let newY = y;
+
             switch (newDirection) {
                 case 'up':
-                    if (y > 0 && map[y - 1][x] !== 1) newY -= 1;
+                    if (y > 0 && map[y - 1][x] !== 1 && !(initialPosition.x === x && initialPosition.y === y - 1)) {
+                        newY -= 1;
+                    }
                     break;
                 case 'down':
-                    if (y < map.length - 1 && map[y + 1][x] !== 1) newY += 1;
+                    if (y < map.length - 1 && map[y + 1][x] !== 1 && !(initialPosition.x === x && initialPosition.y === y + 1)) {
+                        newY += 1;
+                    }
                     break;
                 case 'left':
-                    if (x > 0 && map[y][x - 1] !== 1) newX -= 1;
+                    if (x > 0 && map[y][x - 1] !== 1 && !(initialPosition.x === x - 1 && initialPosition.y === y)) {
+                        newX -= 1;
+                    }
                     break;
                 case 'right':
-                    if (x < map[0].length - 1 && map[y][x + 1] !== 1) newX += 1;
+                    if (x < map[0].length - 1 && map[y][x + 1] !== 1 && !(initialPosition.x === x + 1 && initialPosition.y === y)) {
+                        newX += 1;
+                    }
                     break;
                 default:
                     break;
             }
 
-            // Return the new ghost position
+            // Return the updated ghost position
             return { ...ghost, x: newX, y: newY };
         })
     );
 };
+

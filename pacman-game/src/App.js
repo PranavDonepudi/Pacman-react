@@ -1,4 +1,6 @@
+// App.js
 import React, { useState, useEffect } from 'react';
+import Pacman from './components/Pacman'; // Import the Pacman component
 import Map from './components/Map';
 import Navbar from './components/Navbar';
 import  mapLevel1  from './maps/mapLevel1';
@@ -13,16 +15,16 @@ function App() {
     const [pacmanPosition, setPacmanPosition] = useState({ x: 8, y: 12 });
     const [direction, setDirection] = useState('right');
     const [nextDirection, setNextDirection] = useState(null);
-    const [ghosts, setGhosts] = useState(getInitialGhostPositions());
+    const [ghosts, setGhosts] = useState(getInitialGhostPositions()); // Initialize ghosts using the imported function
 
-    // Use the imported `handleKeyDown` function
+    // Handle keyboard events to change Pacman's direction
     useEffect(() => {
         const handleKeyDownWrapper = (event) => handleKeyDown(event, setNextDirection, direction);
         window.addEventListener('keydown', handleKeyDownWrapper);
         return () => window.removeEventListener('keydown', handleKeyDownWrapper);
     }, [direction]);
 
-    // Use the imported `movePacman` function
+    // Move Pacman continuously
     useEffect(() => {
         const intervalId = setInterval(() => {
             movePacman(
@@ -46,19 +48,26 @@ function App() {
         return () => clearInterval(intervalId);
     }, [direction, pacmanPosition, map, ghosts, lives, nextDirection]);
 
-    // Use the imported `moveGhosts` function
+    // Move ghosts using AI logic
     useEffect(() => {
         const intervalId = setInterval(() => {
-            moveGhosts(ghosts, map, setGhosts);
+            moveGhosts(ghosts, map, setGhosts, pacmanPosition); // Pass pacmanPosition to the ghost AI logic
         }, 500);
         return () => clearInterval(intervalId);
-    }, [map, ghosts]);
+    }, [map, ghosts, pacmanPosition]);
 
+    // Render the game map and components
     return (
         <div className="App">
             <Navbar lives={lives} level={level} score={score} />
             <div className="map-container">
-                <Map map={map} pacmanPosition={pacmanPosition} ghosts={ghosts} />
+                <Map
+                    map={map}
+                    pacmanPosition={pacmanPosition}
+                    pacmanDirection={direction}
+                    animationFrame={1} // Pass in animation frame for Pacman (you can change this to animate)
+                    ghosts={ghosts}
+                />
             </div>
         </div>
     );

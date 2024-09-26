@@ -2,7 +2,7 @@ import React from 'react';
 import Cell from './Cell';
 import './Map.css';
 
-function Map({ map, pacmanPosition, ghosts }) {
+function Map({ map, pacmanPosition, pacmanDirection, animationFrame, ghosts }) {
     return (
         <div className="map">
             {map.map((row, rowIndex) => (
@@ -25,7 +25,15 @@ function Map({ map, pacmanPosition, ghosts }) {
                             ghostType = ghostHere.type; // Get the ghost's type (color)
                         }
 
-                        return <Cell key={cellIndex} type={type} ghostType={ghostType} />;
+                        return (
+                            <Cell
+                                key={cellIndex}
+                                type={type}
+                                ghostType={ghostType}
+                                pacmanDirection={pacmanDirection}
+                                animationFrame={animationFrame}
+                            />
+                        );
                     })}
                 </div>
             ))}
