@@ -1,5 +1,4 @@
 import React from 'react';
-import pacmanGif from '../assets/Pacman/pacman.gif';
 import pacmanUp1 from '../assets/Pacman/PacmanU1.png';
 import pacmanUp2 from '../assets/Pacman/PacmanU2.png';
 import pacmanDown1 from '../assets/Pacman/PacmanD1.png';
@@ -11,7 +10,7 @@ import pacmanRight2 from '../assets/Pacman/PacmanR2.png';
 import ghostRedImage from '../assets/Ghost/ghost-red.png';
 import ghostBlueImage from '../assets/Ghost/ghost-blue.png';
 import ghostOrangeImage from '../assets/Ghost/ghost-orange.png';
-import ghostGreenImage from '../assets/Ghost/ghost-green.png'; // Assuming this is the yellow ghost
+import ghostGreenImage from '../assets/Ghost/ghost-green.png';
 import './Cell.css';
 
 function Cell({ type, ghostType, pacmanDirection, animationFrame }) {
@@ -40,7 +39,7 @@ function Cell({ type, ghostType, pacmanDirection, animationFrame }) {
                 pacmanImage = animationFrame === 1 ? pacmanRight1 : pacmanRight2;
                 break;
             default:
-                pacmanImage = pacmanRight1; // Default to right-facing Pacman
+                pacmanImage = pacmanRight1; // Default image
                 break;
         }
         content = <img src={pacmanImage} alt="Pacman" className="pacman-image" />;

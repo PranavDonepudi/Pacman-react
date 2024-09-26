@@ -1,51 +1,23 @@
 // gameFunctions.js
 
 // Initialize the ghost positions
-// ghosts.js
 export function getInitialGhostPositions() {
     return [
-        { 
-            x: 7, 
-            y: 3, 
-            type: 'red', 
-            released: false, 
-            delay: 0, 
-            initialPosition: { x: 7, y: 3 } 
-        },
-        { 
-            x: 8, 
-            y: 3, 
-            type: 'blue', 
-            released: false, 
-            delay: 5000,  // Delay of 5 seconds
-            initialPosition: { x: 8, y: 3 } 
-        },
-        { 
-            x: 7, 
-            y: 4, 
-            type: 'orange', 
-            released: false, 
-            delay: 10000,  // Delay of 10 seconds
-            initialPosition: { x: 7, y: 4 } 
-        },
-        { 
-            x: 8, 
-            y: 4, 
-            type: 'green', 
-            released: false, 
-            delay: 15000,  // Delay of 15 seconds
-            initialPosition: { x: 8, y: 4 } 
-        }
+        { x: 7, y: 3, type: 'red', released: false, delay: 0, initialPosition: { x: 7, y: 3 } },
+        { x: 8, y: 3, type: 'blue', released: false, delay: 2000, initialPosition: { x: 8, y: 3 } }, // Reduced to 2 seconds
+        { x: 7, y: 4, type: 'orange', released: false, delay: 4000, initialPosition: { x: 7, y: 4 } }, // Reduced to 4 seconds
+        { x: 8, y: 4, type: 'green', released: false, delay: 6000, initialPosition: { x: 8, y: 4 } } // Reduced to 6 seconds
     ];
 }
 
+
 // Handle keyboard events to change direction
-export const handleKeyDown = (event, setNextDirection, currentDirection) => {
+export const handleKeyDown = (event, setNextDirection) => {
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
         event.preventDefault();
     }
 
-    let newDirection = currentDirection;
+    let newDirection;
     switch (event.key) {
         case 'ArrowUp':
             newDirection = 'up';
@@ -60,12 +32,14 @@ export const handleKeyDown = (event, setNextDirection, currentDirection) => {
             newDirection = 'right';
             break;
         default:
-            break;
+            return; // Exit if it's not a relevant key
     }
-    setNextDirection(newDirection); // Store the new direction as the next direction to try
+
+    setNextDirection(newDirection);
 };
 
-// Function to move Pacman
+
+
 export const movePacman = (
     pacmanPosition,
     direction,
@@ -74,19 +48,13 @@ export const movePacman = (
     ghosts,
     setPacmanPosition,
     setDirection,
-    setNextDirection,
-    setMap,
-    setScore,
-    setLives,
-    setGhosts,
-    mapLevel1,
-    getInitialGhostPositions
+    setNextDirection
 ) => {
     let { x, y } = pacmanPosition;
     let newX = x;
     let newY = y;
 
-    // Check if the next direction is valid; if so, update the direction and position
+    // Change direction if the next direction is valid
     if (nextDirection) {
         switch (nextDirection) {
             case 'up':
@@ -116,108 +84,164 @@ export const movePacman = (
             default:
                 break;
         }
-        setNextDirection(null); // Clear next direction after checking
+        setNextDirection(null);
+    } else {
+        // Move in the current direction if `nextDirection` is not set
+        switch (direction) {
+            case 'up':
+                if (y > 0 && map[y - 1][x] !== 1) newY -= 1;
+                break;
+            case 'down':
+                if (y < map.length - 1 && map[y + 1][x] !== 1) newY += 1;
+                break;
+            case 'left':
+                if (x > 0 && map[y][x - 1] !== 1) newX -= 1;
+                break;
+            case 'right':
+                if (x < map[0].length - 1 && map[y][x + 1] !== 1) newX += 1;
+                break;
+            default:
+                break;
+        }
     }
-
-    // Attempt to move in the current direction
-    switch (direction) {
-        case 'up':
-            if (y > 0 && map[y - 1][x] !== 1) newY -= 1;
-            break;
-        case 'down':
-            if (y < map.length - 1 && map[y + 1][x] !== 1) newY += 1;
-            break;
-        case 'left':
-            if (x > 0 && map[y][x - 1] !== 1) newX -= 1;
-            break;
-        case 'right':
-            if (x < map[0].length - 1 && map[y][x + 1] !== 1) newX += 1;
-            break;
-        default:
-            break;
-    }
-
-    // Check for collisions with ghosts
-    const collisionWithGhost = ghosts.some(ghost => ghost.x === newX && ghost.y === newY);
-    if (collisionWithGhost) {
-        // Reduce lives by one and reset game state
-        setLives(lives => lives - 1);
-        setPacmanPosition({ x: 8, y: 12 });
-        setDirection('right');
-        setMap(mapLevel1);
-        setGhosts(getInitialGhostPositions());
-        return;
-    }
-
-    // Update the map to reflect Pacman's movement, but only allow Pacman to eat pellets (value 3)
-    const updatedMap = map.map((row, rowIndex) =>
-        row.map((cell, cellIndex) => {
-            if (rowIndex === newY && cellIndex === newX && cell === 3) {
-                setScore(prevScore => prevScore + 10); // Increment score
-                return 0; // Pacman eats the pellet
-            }
-            if (rowIndex === pacmanPosition.y && cellIndex === pacmanPosition.x) {
-                return 0; // Clear Pacman's previous position
-            }
-            return cell; // Keep other cells (walls, empty spaces) unchanged
-        })
-    );
-    setMap(updatedMap);
 
     // Update Pacman's position
-    setPacmanPosition({ x: newX, y: newY });
+    if (newX !== x || newY !== y) {
+        setPacmanPosition({ x: newX, y: newY });
+    }
 };
 
+
 // Function to move ghosts randomly
-export const moveGhosts = (ghosts, map, setGhosts) => {
+// Helper function to calculate Manhattan distance between two points
+const calculateDistance = (x1, y1, x2, y2) => Math.abs(x1 - x2) + Math.abs(y1 - y2);
+
+// Helper function to get valid moves (up, down, left, right) for a ghost
+const getValidMoves = (x, y, map, initialPosition) => {
+    const moves = [];
+
+    // Move up
+    if (y > 0 && map[y - 1][x] !== 1 && !(initialPosition.x === x && initialPosition.y === y - 1)) {
+        moves.push({ direction: 'up', x, y: y - 1 });
+    }
+    // Move down
+    if (y < map.length - 1 && map[y + 1][x] !== 1 && !(initialPosition.x === x && initialPosition.y === y + 1)) {
+        moves.push({ direction: 'down', x, y: y + 1 });
+    }
+    // Move left
+    if (x > 0 && map[y][x - 1] !== 1 && !(initialPosition.x === x - 1 && initialPosition.y === y)) {
+        moves.push({ direction: 'left', x: x - 1, y });
+    }
+    // Move right
+    if (x < map[0].length - 1 && map[y][x + 1] !== 1 && !(initialPosition.x === x + 1 && initialPosition.y === y)) {
+        moves.push({ direction: 'right', x: x + 1, y });
+    }
+
+    return moves;
+};
+
+// Red ghost: Directly chases Pacman using the shortest path (Manhattan distance)
+const chasePacman = (x, y, map, pacmanX, pacmanY, initialPosition) => {
+    const possibleMoves = getValidMoves(x, y, map, initialPosition);
+    possibleMoves.sort((a, b) => calculateDistance(a.x, a.y, pacmanX, pacmanY) - calculateDistance(b.x, b.y, pacmanX, pacmanY));
+    return possibleMoves[0]; // Choose the move with the smallest distance to Pacman
+};
+
+// Blue ghost: Moves randomly unless within a certain distance of Pacman, then chases
+const randomOrChase = (x, y, map, pacmanX, pacmanY, initialPosition) => {
+    const possibleMoves = getValidMoves(x, y, map, initialPosition);
+    const distanceToPacman = calculateDistance(x, y, pacmanX, pacmanY);
+    
+    // Chase Pacman if within a distance of 5, else move randomly
+    if (distanceToPacman <= 5) {
+        possibleMoves.sort((a, b) => calculateDistance(a.x, a.y, pacmanX, pacmanY) - calculateDistance(b.x, b.y, pacmanX, pacmanY));
+        return possibleMoves[0];
+    } else {
+        return possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+    }
+};
+
+// Orange ghost: Targets the left side of the map but avoids Pacman if too close
+const targetLeftAvoidPacman = (x, y, map, pacmanX, pacmanY, initialPosition) => {
+    const possibleMoves = getValidMoves(x, y, map, initialPosition);
+    const distanceToPacman = calculateDistance(x, y, pacmanX, pacmanY);
+
+    if (distanceToPacman <= 3) {
+        // Move away from Pacman
+        possibleMoves.sort((a, b) => calculateDistance(b.x, b.y, pacmanX, pacmanY) - calculateDistance(a.x, a.y, pacmanX, pacmanY));
+    } else {
+        // Move toward the left side of the map (x = 0)
+        possibleMoves.sort((a, b) => a.x - b.x);
+    }
+
+    return possibleMoves[0];
+};
+
+// Green ghost: Moves in a circular pattern (example: clockwise)
+const circularMovement = (x, y, map, currentDirection) => {
+    const possibleMoves = getValidMoves(x, y, map, { x: -1, y: -1 }); // Pass dummy initial position
+
+    // Circular pattern logic
+    const directionOrder = ['up', 'right', 'down', 'left']; // Clockwise
+    let nextDirectionIndex = directionOrder.indexOf(currentDirection) + 1;
+    if (nextDirectionIndex >= directionOrder.length) nextDirectionIndex = 0;
+
+    // Try to find the next clockwise direction available
+    for (let i = 0; i < directionOrder.length; i++) {
+        const direction = directionOrder[(nextDirectionIndex + i) % directionOrder.length];
+        const move = possibleMoves.find(move => move.direction === direction);
+        if (move) {
+            return move;
+        }
+    }
+
+    // If no valid circular move, choose a random valid move
+    return possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+};
+
+// Main ghost movement function
+export const moveGhosts = (ghosts, map, setGhosts, pacmanPosition) => {
     setGhosts(currentGhosts =>
         currentGhosts.map(ghost => {
-            // Skip moving the ghost if it's not released yet
             if (!ghost.released) {
-                // Introduce a delay before releasing each ghost (e.g., every 5 seconds)
                 setTimeout(() => {
                     setGhosts(prevGhosts =>
-                        prevGhosts.map(g => g.type === ghost.type ? { ...g, released: true } : g)
+                        prevGhosts.map(g => (g.type === ghost.type ? { ...g, released: true } : g))
                     );
                 }, ghost.delay);
-                return ghost; // Do not move the ghost if it's not released
+                return ghost;
             }
 
-            // Calculate new position based on random movement, avoiding walls and initial positions
-            const directions = ['up', 'down', 'left', 'right'];
-            let newDirection = directions[Math.floor(Math.random() * directions.length)];
-            let { x, y, initialPosition } = ghost;
-            let newX = x;
-            let newY = y;
+            const { x: pacmanX, y: pacmanY } = pacmanPosition;
+            const { x, y, initialPosition, direction } = ghost;
+            let nextMove;
 
-            switch (newDirection) {
-                case 'up':
-                    if (y > 0 && map[y - 1][x] !== 1 && !(initialPosition.x === x && initialPosition.y === y - 1)) {
-                        newY -= 1;
-                    }
+            // Apply unique movement logic for each ghost
+            switch (ghost.type) {
+                case 'red':
+                    nextMove = chasePacman(x, y, map, pacmanX, pacmanY, initialPosition);
                     break;
-                case 'down':
-                    if (y < map.length - 1 && map[y + 1][x] !== 1 && !(initialPosition.x === x && initialPosition.y === y + 1)) {
-                        newY += 1;
-                    }
+                case 'blue':
+                    nextMove = randomOrChase(x, y, map, pacmanX, pacmanY, initialPosition);
                     break;
-                case 'left':
-                    if (x > 0 && map[y][x - 1] !== 1 && !(initialPosition.x === x - 1 && initialPosition.y === y)) {
-                        newX -= 1;
-                    }
+                case 'orange':
+                    nextMove = targetLeftAvoidPacman(x, y, map, pacmanX, pacmanY, initialPosition);
                     break;
-                case 'right':
-                    if (x < map[0].length - 1 && map[y][x + 1] !== 1 && !(initialPosition.x === x + 1 && initialPosition.y === y)) {
-                        newX += 1;
-                    }
+                case 'green':
+                    nextMove = circularMovement(x, y, map, direction);
                     break;
                 default:
-                    break;
+                    nextMove = { x, y }; // Stay still if no valid logic
             }
 
-            // Return the updated ghost position
-            return { ...ghost, x: newX, y: newY };
+            return {
+                ...ghost,
+                x: nextMove.x,
+                y: nextMove.y,
+                direction: nextMove.direction || ghost.direction // Update direction if needed
+            };
         })
     );
 };
+
 
