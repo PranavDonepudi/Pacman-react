@@ -1,0 +1,50 @@
+.map {
+    display: grid;
+    grid-template-rows: repeat(9, 40px); /* Adjust the number of rows based on the map size */
+    grid-template-columns: repeat(12, 40px); /* Adjust the number of columns based on the map size */
+    gap: 2px; /* Adds space between cells */
+    position: relative;
+    width: max-content;
+    margin: auto;
+  }
+  
+  .cell {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .wall {
+    background-color: blue; /* Wall color */
+    border: 2px solid darkblue;
+  }
+  
+  .path {
+    background-color: black; /* Path color */
+  }
+  
+  .pacman {
+    background-color: yellow;
+    border-radius: 50%; /* Makes Pacman circular */
+  }
+  
+  .pellet {
+    background-color: black; /* Matches the path */
+    position: relative;
+  }
+  
+  .pellet::after {
+    content: '';
+    display: block;
+    width: 10px;
+    height: 10px;
+    background-color: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
