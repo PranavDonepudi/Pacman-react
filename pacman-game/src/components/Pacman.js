@@ -26,7 +26,7 @@ const Pacman = ({ pacmanPosition, pacmanDirection, animationFrame }) => {
     // Style to position Pacman based on its current position on the map
     const pacmanStyle = {
         position: 'absolute',
-        left: `${pacmanPosition.x * 32}px`, // Assuming each cell is 32px
+        left: `${pacmanPosition.x * 32}px`, 
         top: `${pacmanPosition.y * 32}px`,
         width: '32px',
         height: '32px'

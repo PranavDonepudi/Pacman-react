@@ -10,8 +10,6 @@ export function getInitialGhostPositions() {
     ];
 }
 
-
-
 // Handle keyboard events to change direction
 export const handleKeyDown = (event, setNextDirection) => {
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
@@ -55,7 +53,7 @@ export const movePacman = (
     mapLevel1,
     getInitialGhostPositions,
     setGameOver,
-    setGhostsBlueEyed, // Set ghosts to blue-eyed mode
+    setGhostsBlueEyed, 
     ghostsBlueEyed
 ) => {
     let { x, y } = pacmanPosition;
@@ -161,7 +159,6 @@ export const movePacman = (
 
 // Function to move ghosts randomly
 // Helper function to get valid moves (up, down, left, right) for a ghost, avoiding initial positions
-// Helper function to get valid moves (up, down, left, right) for a ghost
 const getValidMoves = (x, y, map) => {
     const moves = [];
 

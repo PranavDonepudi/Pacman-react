@@ -14,7 +14,7 @@ export function getInitialGhostPositions() {
             y: 3, 
             type: 'blue', 
             released: false, 
-            delay: 5000,  // Delay of 5 seconds
+            delay: 5000, 
             initialPosition: { x: 8, y: 3 } 
         },
         { 
@@ -22,7 +22,7 @@ export function getInitialGhostPositions() {
             y: 4, 
             type: 'orange', 
             released: false, 
-            delay: 10000,  // Delay of 10 seconds
+            delay: 10000,  
             initialPosition: { x: 7, y: 4 } 
         },
         { 
@@ -30,7 +30,7 @@ export function getInitialGhostPositions() {
             y: 4, 
             type: 'green', 
             released: false, 
-            delay: 15000,  // Delay of 15 seconds
+            delay: 15000, 
             initialPosition: { x: 8, y: 4 } 
         }
     ];
