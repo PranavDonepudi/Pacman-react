@@ -1,50 +1,49 @@
 import React from 'react';
-import Cell from './Cell';
-import './Map.css';
+import Pacman from './Pacman';
+import Ghost from './Ghost';
 
-function Map({ map, pacmanPosition, pacmanDirection, animationFrame, ghosts, fruitPosition, ghostsBlueEyed }) {
+const Map = ({ map, pacmanPosition, pacmanDirection, animationFrame, ghosts, fruitPosition, ghostsBlueEyed }) => {
     return (
         <div className="map">
             {map.map((row, rowIndex) => (
-                <div key={rowIndex} className="row">
+                <div key={rowIndex} className="map-row">
                     {row.map((cell, cellIndex) => {
-                        let type = cell;
-                        let ghostType = null;
+                        const isPacman = pacmanPosition.x === cellIndex && pacmanPosition.y === rowIndex;
+                        const ghostAtPosition = ghosts.find(ghost => ghost.x === cellIndex && ghost.y === rowIndex);
+                        const isFruit = fruitPosition && fruitPosition.x === cellIndex && fruitPosition.y === rowIndex;
 
-                        // Check if this is Pacman's current position
-                        if (rowIndex === pacmanPosition.y && cellIndex === pacmanPosition.x) {
-                            type = 2; // Pacman's cell type
+                        if (isPacman) {
+                            return (
+                                <Pacman
+                                    key={`${rowIndex}-${cellIndex}`}
+                                    direction={pacmanDirection}
+                                    animationFrame={animationFrame}
+                                />
+                            );
                         }
 
-                        // Check if this cell contains a ghost
-                        const ghostHere = ghosts.find(
-                            (ghost) => ghost.x === cellIndex && ghost.y === rowIndex
-                        );
-                        if (ghostHere) {
-                            type = 4; // Ghost's cell type
-                            ghostType = ghostHere.type; // Get the ghost's type (color)
+                        if (ghostAtPosition) {
+                            return (
+                                <Ghost
+                                    key={`${rowIndex}-${cellIndex}`}
+                                    ghost={ghostAtPosition}
+                                    ghostsBlueEyed={ghostsBlueEyed}
+                                />
+                            );
                         }
 
-                        // Check if this cell contains a fruit
-                        if (fruitPosition && fruitPosition.x === cellIndex && fruitPosition.y === rowIndex) {
-                            type = 5; // Fruit's cell type
+                        if (isFruit) {
+                            return <div key={`${rowIndex}-${cellIndex}`} className="fruit" />;
                         }
 
                         return (
-                            <Cell
-                                key={cellIndex}
-                                type={type}
-                                ghostType={ghostType}
-                                pacmanDirection={pacmanDirection}
-                                animationFrame={animationFrame}
-                                ghostsBlueEyed={ghostsBlueEyed}
-                            />
+                            <div key={`${rowIndex}-${cellIndex}`} className={`cell ${cell === 1 ? 'wall' : 'path'}`} />
                         );
                     })}
                 </div>
             ))}
         </div>
     );
-}
+};
 
 export default Map;

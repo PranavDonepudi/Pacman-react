@@ -3,14 +3,18 @@ import Map from './components/Map';
 import Navbar from './components/Navbar';
 import mapLevel1 from './maps/mapLevel1';
 import mapLevel2 from './maps/mapLevel2';
-import { movePacman, moveGhosts, getInitialGhostPositions, handleKeyDown } from './gameFunction';
+import { getInitialGhostPositions } from './getInitialGhostPositions';
+import usePacmanMovement from './hooks/usePacmanMovement';
+import useGhostMovement from './hooks/useGhostMovement';
+import useHandleKeyDown from './hooks/useHandleKeyDown';
+
 import './App.css';
 
 function App() {
     const [lives, setLives] = useState(3);
     const [level, setLevel] = useState(1);
     const [score, setScore] = useState(0);
-    const [map, setMap] = useState(mapLevel1); // Use a single map state
+    const [map, setMap] = useState(mapLevel1); // Consolidated map state for current level
     const [pacmanPosition, setPacmanPosition] = useState({ x: 8, y: 12 });
     const [direction, setDirection] = useState('right');
     const [nextDirection, setNextDirection] = useState(null);
@@ -21,73 +25,42 @@ function App() {
     const [ghostsBlueEyed, setGhostsBlueEyed] = useState(false);
     const [ghostsBlueEyedTimeout, setGhostsBlueEyedTimeout] = useState(null);
 
-    // Handle keyboard events to change Pacman's direction
-    useEffect(() => {
-        const handleKeyDownWrapper = (event) => handleKeyDown(event, setNextDirection);
-        window.addEventListener('keydown', handleKeyDownWrapper);
-        return () => window.removeEventListener('keydown', handleKeyDownWrapper);
-    }, []);
-
-    // Move Pacman continuously
-    useEffect(() => {
-        if (gameOver) return;
-
-        const intervalId = setInterval(() => {
-            movePacman(
-                pacmanPosition,
-                direction,
-                nextDirection,
-                map,
-                ghosts,
-                setPacmanPosition,
-                setDirection,
-                setNextDirection,
-                setMap,
-                setScore,
-                setLives,
-                setGhosts,
-                mapLevel1,
-                mapLevel2,
-                getInitialGhostPositions,
-                (newGameOver) => {
-                    if (lives <= 0) {
-                        setGameOver(newGameOver);
-                    }
-                }, 
-                fruitPosition,
-                setFruitPosition,
-                setGhostsBlueEyed,
-                ghostsBlueEyed,
-                level,
-                setLevel, // Pass level and setLevel to handle level transitions
-            );
-        }, 200);
-
-        return () => clearInterval(intervalId);
-    }, [direction, pacmanPosition, map, ghosts, nextDirection, gameOver, fruitPosition, ghostsBlueEyed, level]);
-
-    // Move ghosts
-    useEffect(() => {
-        if (gameOver) return;
-
-        const intervalId = setInterval(() => {
-            moveGhosts(ghosts, map, setGhosts, pacmanPosition, ghostsBlueEyed);
-        }, 250);
-
-        return () => clearInterval(intervalId);
-    }, [map, ghosts, pacmanPosition, gameOver, ghostsBlueEyed]);
-
+    // Use custom hooks for handling game logic
+    useHandleKeyDown(setNextDirection);
+    usePacmanMovement(
+        pacmanPosition,
+        direction,
+        nextDirection,
+        map,
+        ghosts,
+        setPacmanPosition,
+        setDirection,
+        setNextDirection,
+        setMap,
+        setScore,
+        setLives,
+        setGhosts,
+        mapLevel1,
+        setGameOver,
+        setGhostsBlueEyed,
+        ghostsBlueEyed,
+        level,
+        setLevel,
+        gameOver // Pass gameOver to the hook
+    );
+    
+    useGhostMovement(ghosts, map, setGhosts, pacmanPosition, ghostsBlueEyed, gameOver); // Pass gameOver to the hook
+    
     // Animation frame toggling for Pacman
     useEffect(() => {
         if (gameOver) return;
-    
+
         const animationIntervalId = setInterval(() => {
             setAnimationFrame((prevFrame) => (prevFrame === 1 ? 2 : 1));
         }, 200);
-    
+
         return () => clearInterval(animationIntervalId);
-    }, [gameOver, animationFrame]); // Added animationFrame as a dependency
-    
+    }, [gameOver]);
 
     // Add fruit to the map when the score reaches 400
     useEffect(() => {
@@ -101,12 +74,12 @@ function App() {
         if (ghostsBlueEyed) {
             const timeoutId = setTimeout(() => {
                 setGhostsBlueEyed(false);
-            }, 5000);// eslint-disable-next-line
+            }, 5000);
             setGhostsBlueEyedTimeout(timeoutId);
         }
 
         return () => clearTimeout(ghostsBlueEyedTimeout);
-    }, [ghostsBlueEyed]);
+    }, [ghostsBlueEyed, ghostsBlueEyedTimeout]);
 
     // Transition to the next level
     useEffect(() => {

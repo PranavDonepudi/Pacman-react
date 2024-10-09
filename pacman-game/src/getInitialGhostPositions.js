@@ -34,4 +34,6 @@ export function getInitialGhostPositions() {
             initialPosition: { x: 8, y: 4 } 
         }
     ];
+
 }
+
