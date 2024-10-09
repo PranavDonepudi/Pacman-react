@@ -21,39 +21,62 @@ function App() {
     const [ghosts, setGhosts] = useState(getInitialGhostPositions());
     const [animationFrame, setAnimationFrame] = useState(1);
     const [gameOver, setGameOver] = useState(false);
-    const [fruitPosition, setFruitPosition] = useState(null);
+    const [fruitPosition, setFruitPosition] = useState(null); // Fruit position
     const [ghostsBlueEyed, setGhostsBlueEyed] = useState(false);
     const [ghostsBlueEyedTimeout, setGhostsBlueEyedTimeout] = useState(null);
 
-    // Use custom hooks for handling game logic
-    useHandleKeyDown(setNextDirection);
-    usePacmanMovement(
-        pacmanPosition,
-        direction,
-        nextDirection,
-        map,
-        ghosts,
-        setPacmanPosition,
-        setDirection,
-        setNextDirection,
-        setMap,
-        setScore,
-        setLives,
-        setGhosts,
-        mapLevel1,
-        setGameOver,
-        setGhostsBlueEyed,
-        ghostsBlueEyed,
-        level,
-        setLevel,
-        gameOver // Pass gameOver to the hook
-    );
-    
-    useGhostMovement(ghosts, map, setGhosts, pacmanPosition, ghostsBlueEyed, gameOver); // Pass gameOver to the hook
-    
-    // Animation frame toggling for Pacman
+    // Handle keyboard events to change Pacman's direction
+    useEffect(() => {
+        const handleKeyDownWrapper = (event) => handleKeyDown(event, setNextDirection);
+        window.addEventListener('keydown', handleKeyDownWrapper);
+        return () => window.removeEventListener('keydown', handleKeyDownWrapper);
+    }, []);
+
+    // Move Pacman continuously
     useEffect(() => {
         if (gameOver) return;
+
+        const intervalId = setInterval(() => {
+            movePacman(
+                pacmanPosition,
+                direction,
+                nextDirection,
+                map,
+                ghosts,
+                setPacmanPosition,
+                setDirection,
+                setNextDirection,
+                setMap,
+                setScore,
+                setLives,
+                setGhosts,
+                mapLevel1,
+                getInitialGhostPositions,
+                setGameOver,
+                fruitPosition,
+                setFruitPosition,
+                setGhostsBlueEyed,
+                ghostsBlueEyed
+            );
+        }, 200);
+
+        return () => clearInterval(intervalId);
+    }, [direction, pacmanPosition, map, ghosts, nextDirection, gameOver, fruitPosition, ghostsBlueEyed]);
+
+    // Move ghosts
+    useEffect(() => {
+        if (gameOver) return;
+
+        const intervalId = setInterval(() => {
+            moveGhosts(ghosts, map, setGhosts, pacmanPosition, ghostsBlueEyed);
+        }, 250);
+
+        return () => clearInterval(intervalId);
+    }, [map, ghosts, pacmanPosition, gameOver, ghostsBlueEyed]);
+
+    // Animation frame toggling for Pacman
+    useEffect(() => {
+        if (gameOver) return; // Stop animation if game is over
 
         const animationIntervalId = setInterval(() => {
             setAnimationFrame((prevFrame) => (prevFrame === 1 ? 2 : 1));
@@ -65,7 +88,8 @@ function App() {
     // Add fruit to the map when the score reaches 400
     useEffect(() => {
         if (score >= 400 && !fruitPosition) {
-            setFruitPosition({ x: 10, y: 10 });
+            // Set a fixed fruit position
+            setFruitPosition({ x: 10, y: 10 }); // Specify the desired coordinates for the fruit
         }
     }, [score, fruitPosition]);
 
@@ -74,21 +98,12 @@ function App() {
         if (ghostsBlueEyed) {
             const timeoutId = setTimeout(() => {
                 setGhostsBlueEyed(false);
-            }, 5000);
+            }, 5000); // 5 seconds duration
             setGhostsBlueEyedTimeout(timeoutId);
         }
 
         return () => clearTimeout(ghostsBlueEyedTimeout);
-    }, [ghostsBlueEyed, ghostsBlueEyedTimeout]);
-
-    // Transition to the next level
-    useEffect(() => {
-        if (level === 2) {
-            setMap(mapLevel2); // Change map to level 2
-            setPacmanPosition({ x: 8, y: 12 }); // Reset Pacman's position
-            setGhosts(getInitialGhostPositions()); // Reset ghosts' positions
-        }
-    }, [level]);
+    }, [ghostsBlueEyed]);
 
     return (
         <div className="App">
@@ -106,8 +121,8 @@ function App() {
                         pacmanDirection={direction}
                         animationFrame={animationFrame}
                         ghosts={ghosts}
-                        fruitPosition={fruitPosition}
-                        ghostsBlueEyed={ghostsBlueEyed}
+                        fruitPosition={fruitPosition} // Pass the fruit position to the map
+                        ghostsBlueEyed={ghostsBlueEyed} // Pass blue-eyed state to the map
                     />
                 </div>
             )}

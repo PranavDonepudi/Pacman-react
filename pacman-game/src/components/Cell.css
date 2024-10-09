@@ -32,10 +32,9 @@
     position: absolute;
   }
   
-  /* New styles for the fruit */
-  .fruit-image {
-    width: 20px; /* Match the size of Pacman */
-    height: 20px;
+  .ghost-box {
+    background-color: #333333; /* A darker color for the ghost box */
+    border: 2px dashed #FFFFFF; /* Dashed border to indicate a special area */
   }
   
   .ghost-image {

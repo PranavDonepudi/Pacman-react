@@ -2,7 +2,11 @@ import React from 'react';
 import Pacman from './Pacman';
 import Ghost from './Ghost';
 
+<<<<<<< HEAD
 const Map = ({ map, pacmanPosition, pacmanDirection, animationFrame, ghosts, fruitPosition, ghostsBlueEyed }) => {
+=======
+function Map({ map, pacmanPosition, pacmanDirection, animationFrame, ghosts }) {
+>>>>>>> parent of 65b1c90 (Fruit-not wroking)
     return (
         <div className="map">
             {map.map((row, rowIndex) => (
@@ -32,12 +36,23 @@ const Map = ({ map, pacmanPosition, pacmanDirection, animationFrame, ghosts, fru
                             );
                         }
 
+<<<<<<< HEAD
                         if (isFruit) {
                             return <div key={`${rowIndex}-${cellIndex}`} className="fruit" />;
                         }
 
                         return (
                             <div key={`${rowIndex}-${cellIndex}`} className={`cell ${cell === 1 ? 'wall' : 'path'}`} />
+=======
+                        return (
+                            <Cell
+                                key={cellIndex}
+                                type={type}
+                                ghostType={ghostType}
+                                pacmanDirection={pacmanDirection}
+                                animationFrame={animationFrame}
+                            />
+>>>>>>> parent of 65b1c90 (Fruit-not wroking)
                         );
                     })}
                 </div>
